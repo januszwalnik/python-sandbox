@@ -2,68 +2,62 @@
 
 Welcome to your Python project! Follow these steps to set up your environment and get started. 🚀
 
-## 🌟 Create a Virtual Environment
+## 🌟 Set Up Your Python Environment with Poetry
 
-A virtual environment helps isolate your project dependencies. Here's how to create one:
+Poetry helps you manage dependencies and virtual environments easily. Here's how to get started:
 
-1. Open your terminal and navigate to your project directory:
+1. **Install Poetry** (if you haven't already):
+    ```bash
+    curl -sSL https://install.python-poetry.org | python3 -
+    ```
+    Or see [Poetry's official installation guide](https://python-poetry.org/docs/#installation).
+
+2. **Navigate to your project directory:**
     ```bash
     cd /home/janusz/python/python_app
     ```
-1. Ensure that the `venv` module is installed on your system. It is included by default in Python 3.3 and later. If it's not available, you may need to install it or update your Python version. To install it manually, use the following command:
 
+3. **Install dependencies and set up the virtual environment:**
     ```bash
-    sudo apt install python3-venv
+    poetry install
     ```
 
-1. Create a virtual environment:
+4. **Activate the Poetry shell:**
     ```bash
-    python3 -m venv venv
+    poetry shell
+    ```
+    You should now see your Poetry-managed virtual environment active.
+
+## 🛠️ Using the Makefile
+
+Common project tasks are automated with a `Makefile`. Here are some useful commands:
+
+- **Install dependencies:**
+    ```bash
+    make poetry-add-dep
+    make poetry-install-deps  
+    ```
+- **Run the FastAPI application:**
+    ```bash
+    make poetry-run
     ```
 
-1. Activate the virtual environment:
-    - On **Linux/Mac**:
-      ```bash
-      source venv/bin/activate
-      ```
-    - On **Windows**:
-      ```bash
-      venv\Scripts\activate
-      ```
+Check the `Makefile` for more available commands or type `make help.
 
-1. You should now see `(venv)` in your terminal prompt. 🎉
-
-## 📦 Install Requirements
-
-Install the necessary dependencies for your project:
-
-1. Make sure your virtual environment is activated. ✅
-
-2. Run the following command to install the required packages:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4. Once the build is complete, your Docker image will be ready to use. 🎉
-## 🚀 Run the FastAPI Application
+You're now ready to develop with Poetry and Make! 🎉
 
 To start your FastAPI application, follow these steps:
 
-1. Ensure your virtual environment is activated. ✅
+1. Open your browser and navigate to `http://127.0.0.1:8000` to access your application.
 
-2. Run the following command to start the FastAPI server:
-    ```bash
-    ./venv/bin/uvicorn main:app --reload
-    ```
-
-3. Open your browser and navigate to `http://127.0.0.1:8000` to access your application.
-
-4. To explore the automatically generated API documentation, visit:
+1. To explore the automatically generated API documentation, visit:
     - Swagger UI: `http://127.0.0.1:8000/docs`
     - ReDoc: `http://127.0.0.1:8000/redoc`
 
 You're now running your FastAPI application! 🎉
 
-3. You're all set! 🛠️
+1. You're all set! 🛠️
+
 ## 🐳 Build a Docker Image
 
 To containerize your FastAPI application, you can build a Docker image. Follow these steps:

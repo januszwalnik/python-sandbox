@@ -13,7 +13,6 @@ class User(Base):
     is_active = Column(Integer, default=1, nullable=False)
     is_superuser = Column(Integer, default=0, nullable=False)
     is_verified = Column(Integer, default=0, nullable=False)
-    # Consider using Boolean for flags:
     is_deleted = Column(Boolean, default=False)
     is_blocked = Column(Boolean, default=False)        
     
