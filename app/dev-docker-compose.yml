@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:17.5
+    container_name: fastapi_postgres
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_USER: fastapi_user
+      POSTGRES_PASSWORD: fastapi_pass
+      POSTGRES_DB: fastapi_db
+      POSTGRES_INITDB_ARGS: "--wal-level=replica --max_wal_senders=10 --hot_standby=on"
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./pg_hba.conf:/var/lib/postgresql/data/pg_hba.conf  
+
+  postgres_dr:
+    image: postgres:17.5
+    container_name: fastapi_postgres_dr
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_USER: fastapi_user
+      POSTGRES_PASSWORD: fastapi_pass
+      POSTGRES_DB: fastapi_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_dr_data:/var/lib/postgresql/data
+    depends_on:
+      - postgres
+    command: >
+      bash -c "
+        rm -rf /var/lib/postgresql/data/*;
+        PGPASSWORD=fastapi_pass pg_basebackup -h postgres -D /var/lib/postgresql/data -U fastapi_user -Fp -Xs -P -R;
+        chmod -R 700 /var/lib/postgresql/data;
+        postgres
+      "    
+
+  redis:
+    image: redis:8
+    container_name: fastapi_redis
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+  postgres_dr_data:
