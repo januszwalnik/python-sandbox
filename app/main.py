@@ -29,14 +29,14 @@ app = FastAPI()
 pod_name = Faker().first_name()
 
 @app.on_event("startup")
-"""
-Event handler for FastAPI application startup.
-
-Initializes the Redis client and sets up FastAPICache with a Redis backend.
-Raises a RuntimeError if the cache falls back to the in-memory backend,
-indicating that Redis was not properly initialized.
-"""
 async def on_startup():
+    """
+    Event handler for FastAPI application startup.
+
+    Initializes the Redis client and sets up FastAPICache with a Redis backend.
+    Raises a RuntimeError if the cache falls back to the in-memory backend,
+    indicating that Redis was not properly initialized.
+    """
     global redis_client
     redis_client = redis.from_url("redis://localhost:6379", encoding="utf8", decode_responses=False)
     FastAPICache.init(RedisBackend(redis_client), prefix="fastapi-cache")
