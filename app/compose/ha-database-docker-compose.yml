@@ -1,0 +1,72 @@
+services:
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.12
+    container_name: etcd
+    environment:
+      ETCD_NAME: etcd0
+      ETCD_INITIAL_ADVERTISE_PEER_URLS: http://etcd:2380
+      ETCD_ADVERTISE_CLIENT_URLS: http://etcd:2379
+      ETCD_LISTEN_CLIENT_URLS: http://0.0.0.0:2379
+      ETCD_LISTEN_PEER_URLS: http://0.0.0.0:2380
+      ETCD_INITIAL_CLUSTER: etcd0=http://etcd:2380
+    ports:
+      - "2379:2379"
+
+  patroni1:
+    image: ghcr.io/zalando/patroni:3.0.0
+    container_name: patroni1
+    environment:
+      PATRONI_NAME: patroni1
+      PATRONI_SCOPE: pgcluster
+      PATRONI_REST_API_LISTEN: 0.0.0.0:8008
+      PATRONI_ETCD_HOSTS: etcd:2379
+      PATRONI_POSTGRESQL_DATA_DIR: /home/postgres/pgdata/data
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:5432
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni1:5432
+      PATRONI_POSTGRESQL_AUTHENTICATION_SUPERUSER_USERNAME: postgres
+      PATRONI_POSTGRESQL_AUTHENTICATION_SUPERUSER_PASSWORD: postgres
+      PATRONI_POSTGRESQL_AUTHENTICATION_REPLICATION_USERNAME: replicator
+      PATRONI_POSTGRESQL_AUTHENTICATION_REPLICATION_PASSWORD: replicate
+      PATRONI_REPLICATION_USERNAME: replicator
+      PATRONI_REPLICATION_PASSWORD: replicate
+    volumes:
+      - patroni1-data:/home/postgres/pgdata
+    ports:
+      - "5432:5432"  # for direct access
+
+  patroni2:
+    image: ghcr.io/zalando/patroni:3.0.0
+    container_name: patroni2
+    environment:
+      PATRONI_NAME: patroni2
+      PATRONI_SCOPE: pgcluster
+      PATRONI_REST_API_LISTEN: 0.0.0.0:8008
+      PATRONI_ETCD_HOSTS: etcd:2379
+      PATRONI_POSTGRESQL_DATA_DIR: /home/postgres/pgdata/data
+      PATRONI_POSTGRESQL_LISTEN: 0.0.0.0:5432
+      PATRONI_POSTGRESQL_CONNECT_ADDRESS: patroni2:5432
+      PATRONI_POSTGRESQL_AUTHENTICATION_SUPERUSER_USERNAME: postgres
+      PATRONI_POSTGRESQL_AUTHENTICATION_SUPERUSER_PASSWORD: postgres
+      PATRONI_POSTGRESQL_AUTHENTICATION_REPLICATION_USERNAME: replicator
+      PATRONI_POSTGRESQL_AUTHENTICATION_REPLICATION_PASSWORD: replicate
+      PATRONI_REPLICATION_USERNAME: replicator
+      PATRONI_REPLICATION_PASSWORD: replicate
+    volumes:
+      - patroni2-data:/home/postgres/pgdata
+    ports:
+      - "5433:5432"  # for direct access
+
+  haproxy:
+    image: haproxy:2.9
+    container_name: haproxy
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    ports:
+      - "5000:5000"  # read-write (leader)
+      - "5001:5001"  # read-only (followers)
+
+volumes:
+  patroni1-data:
+    name: app_postgres_data
+  patroni2-data:
+    name:  app_postgres_dr_data

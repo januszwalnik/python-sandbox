@@ -37,6 +37,7 @@ async def on_startup():
     if backend.__class__.__name__ == "InMemoryBackend":
         raise RuntimeError("Fallback cache is active! Redis not initialized.")
     
+    
 
 @app.get("/user", response_model=list[User_Base])
 async def get_users(db: AsyncSession = Depends(get_db)):

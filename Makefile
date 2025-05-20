@@ -56,11 +56,11 @@ docker-run:
 
 .PHONY: docker-compose=run
 docker-compose-run:
-	docker compose -f app/dev-docker-compose.yml up -d
+	docker compose -f app/compose/dev-docker-compose.yml up -d
 
 .PHONY: docker-compose-stop		
 docker-compose-stop:
-	docker compose -f app/dev-docker-compose.yml down
+	docker compose -f app/compose/dev-docker-compose.yml down
 
 .PHONY: poetry-run
 poetry-run:
