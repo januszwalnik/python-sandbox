@@ -29,6 +29,13 @@ app = FastAPI()
 pod_name = Faker().first_name()
 
 @app.on_event("startup")
+"""
+Event handler for FastAPI application startup.
+
+Initializes the Redis client and sets up FastAPICache with a Redis backend.
+Raises a RuntimeError if the cache falls back to the in-memory backend,
+indicating that Redis was not properly initialized.
+"""
 async def on_startup():
     global redis_client
     redis_client = redis.from_url("redis://localhost:6379", encoding="utf8", decode_responses=False)
@@ -41,6 +48,18 @@ async def on_startup():
 
 @app.get("/user", response_model=list[User_Base])
 async def get_users(db: AsyncSession = Depends(get_db)):
+    """
+        Endpoint to retrieve a list of all users.
+
+        This asynchronous endpoint fetches all users from the database, with the results cached for 60 seconds under the "user_all" namespace.
+        A simulated delay of 4 seconds is introduced before fetching the users.
+
+        Args:
+            db (AsyncSession): The asynchronous database session dependency.
+
+        Returns:
+            list[User_Base]: A list of user objects conforming to the User_Base schema.
+    """
     async def fetch_users():
         await asyncio.sleep(4)
         return await get_all_users(db)
@@ -48,19 +67,38 @@ async def get_users(db: AsyncSession = Depends(get_db)):
 
 @app.post("/user/", response_model=User_Base)
 async def create_user(user: User_Create, db: AsyncSession = Depends(get_db)):
+    """
+    Asynchronously creates a new user in the database.
+    Args:
+        user (User_Create): The user data to create a new user.
+        db (AsyncSession, optional): The asynchronous database session. Defaults to Depends(get_db).
+    Returns:
+        The result of the user creation operation.
+    Side Effects:
+        Clears the FastAPICache for the "user_all" namespace after creating the user.
+    """
     result = await set_user(user, db)
     await FastAPICache.clear(namespace="user_all")
     return result
 
 @app.get("/pod-name")
 def get_pod_name():
+    """
+    Retrieve the name of the current pod.
+    Returns:
+        dict: A dictionary containing the pod name with the key 'pod_name'.
+    """
+    
     return {"pod_name": pod_name}
 
 
 @app.get("/clear-cache")
-async def cleare_cache_endpoint():
+async def cleare_cache_endpoint() -> dict:
     """
-    This endpoint clears the cache from the redis entirely, which means that all of the keys will be removed.
+    Asynchronously clears the FastAPI cache.
+    This endpoint clears all cached data managed by FastAPICache and returns a confirmation message.
+    Returns:
+        dict: A message indicating that the cache has been cleared.
     """
     await FastAPICache.clear()
     return {"message": "Cache cleared"}
