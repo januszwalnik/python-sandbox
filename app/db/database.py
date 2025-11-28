@@ -6,13 +6,22 @@ from fastapi import Depends
 
 from sqlalchemy.ext.declarative import declarative_base
 
+# Pull variables from .env file
+import os
+from dotenv import load_dotenv
+
 Base = declarative_base()
 
-USER="fastapi_user"
-PASSWORD="fastapi_pass"
-DATABASE="fastapi_db"
-HOST="localhost"
-PORT=5432
+try:
+    load_dotenv()
+except Exception:
+    pass
+
+USER = os.getenv("USER", "fastapi_user")
+PASSWORD = os.getenv("PASSWORD", "fastapi_pass")
+DATABASE = os.getenv("DATABASE", "fastapi_db")
+HOST = os.getenv("HOST", "localhost")
+PORT = int(os.getenv("PORT", "5432"))
 
 DATABASE_URL = f"postgresql+asyncpg://{USER}:{PASSWORD}@{HOST}/{DATABASE}"
 

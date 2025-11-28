@@ -15,11 +15,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./dr/pg_hba.conf:/etc/postgresql/pg_hba.conf
-    command: >
-     bash -c " 
-      postgres -c config_file=/var/lib/postgresql/data/postgresql.conf -c hba_file=/etc/postgresql/pg_hba.conf
-     "
+      - ./dr/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command: ["postgres", "-c", "hba_file=/etc/postgresql/pg_hba.conf"]
 
   postgres_dr:
     image: postgres:17.5
@@ -34,7 +31,8 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_dr_data:/var/lib/postgresql/data
+      - "postgres_dr_data:/var/lib/postgresql/data"
+      - ./dr/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
     depends_on:
       - postgres
     command: >

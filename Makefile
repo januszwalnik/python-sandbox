@@ -20,6 +20,7 @@ help:
 	@echo "  make pg-revision msg=\"message\"            - Create new Alembic revision"
 	@echo "  make docker-build                         - Build Docker image"
 	@echo "  make docker-run                           - Run Docker container"
+	@echo "  make docker-compose-run                   - Init DB with Docker Compose. Required before first run"
 	@echo "  make docker-compose-run                   - Run Docker Compose for pg contiainer"
 	@echo "  make docker-compose-stop                  - Stop Docker Compose for pg container"
 	@echo "  make poetry-run                           - Run FastAPI app with Uvicorn using Poetry"
@@ -54,7 +55,14 @@ docker-build:
 docker-run:
 	docker run -d --rm --name $(CONTAINER_NAME) -p 8000:8000 $(IMAGE_NAME)
 
-.PHONY: docker-compose=run
+.PHONY: docker-compose-init-db
+docker-compose-init-db:
+	docker compose -f app/compose/dev-docker-compose-init-db.yml up -d
+	echo "Wait for db setup"; sleep 3
+	poetry run $(ALEMBIC) upgrade head
+	docker compose -f app/compose/dev-docker-compose-init-db.yml down
+
+.PHONY: docker-compose-run
 docker-compose-run:
 	docker compose -f app/compose/dev-docker-compose.yml up -d
 

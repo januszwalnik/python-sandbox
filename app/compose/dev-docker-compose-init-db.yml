@@ -1,0 +1,21 @@
+# This is a implementation of a Docker Compose file for a FastAPI application with PostgreSQL and a read replica setup. The main PostgreSQL instance is configured to allow replication, and the read replica is set up to use base backup for initial data synchronization.
+# This cannot be run alongside the HA database setup in the same Docker network, as they will conflict on the same ports.
+services:
+  postgres:
+    image: postgres:17.5
+    container_name: fastapi_postgres
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_USER: fastapi_user
+      POSTGRES_PASSWORD: fastapi_pass
+      POSTGRES_DB: fastapi_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./dr/pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+
+volumes:
+  postgres_data:
+    name: app_postgres_data
