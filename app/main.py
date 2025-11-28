@@ -24,7 +24,13 @@ from fastapi_cache.backends.redis import RedisBackend
 from fastapi_cache.decorator import cache
 import redis.asyncio as redis
 
+'''
+Prometheus metrics imports
+'''
+from prometheus_fastapi_instrumentator import Instrumentator
+
 app = FastAPI()
+Instrumentator().instrument(app).expose(app)
 
 pod_name = Faker().first_name()
 

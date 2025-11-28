@@ -25,6 +25,7 @@ help:
 	@echo "  make docker-compose-stop                  - Stop Docker Compose for pg container"
 	@echo "  make poetry-run                           - Run FastAPI app with Uvicorn using Poetry"
 	@echo "  make poetry-install-deps                  - Install dependencies with Poetry"
+	@echo "  make poetry-show                          - Show all installed dependencies with Poetry"
 	@echo "  make poetry-add-dep                       - Add dependencies from requirements.txt with Poetry"
 	@echo "  make poetry-add-dev-dep pkg=package_name  - Add a development dependency with Poetry"
 
@@ -73,6 +74,10 @@ docker-compose-stop:
 .PHONY: poetry-run
 poetry-run:
 	poetry run uvicorn app.main:app --reload
+
+.PHONY: poetry-show
+poetry-show:
+	poetry show
 
 .PHONY: poetry-install-deps
 poetry-install-deps:
