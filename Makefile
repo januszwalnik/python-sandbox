@@ -31,7 +31,7 @@ help:
 # Downgrade by one revision
 .PHONY: pg-downgrade
 pg-downgrade:
-	$(ALEMBIC) downgrade -1
+	poetry run $(ALEMBIC) downgrade -1
 
 # Upgrade to latest (head)
 .PHONY: pg-upgrade

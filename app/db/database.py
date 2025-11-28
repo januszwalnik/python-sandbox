@@ -17,8 +17,8 @@ try:
 except Exception:
     pass
 
-USER = os.getenv("USER", "fastapi_user")
-PASSWORD = os.getenv("PASSWORD", "fastapi_pass")
+USER = os.getenv("DB_USER", "fastapi_user")
+PASSWORD = os.getenv("DB_PASSWORD", "fastapi_pass")
 DATABASE = os.getenv("DATABASE", "fastapi_db")
 HOST = os.getenv("HOST", "localhost")
 PORT = int(os.getenv("PORT", "5432"))

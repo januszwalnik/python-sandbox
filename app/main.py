@@ -75,7 +75,7 @@ async def create_user(user: User_Create, db: AsyncSession = Depends(get_db)):
     Returns:
         The result of the user creation operation.
     Side Effects:
-        Clears the FastAPICache for the "user_all" namespace after creating the user.
+        Clears the FastAPICache for the "user_all" namespace after creating new user.
     """
     result = await set_user(user, db)
     await FastAPICache.clear(namespace="user_all")
